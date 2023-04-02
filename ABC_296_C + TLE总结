@@ -1,0 +1,72 @@
+AtCoder Beginner Contest 296 C题解 - 第一次写题解，请大家多多支持！
+
+题目： 给定一个N个数字的序列A1, A2, …, An，判断是否能找到一个数对（i,j），使得Ai - Aj = X。数据限制是2<=N<=2*10^5, -10^9<=Ai<=10^9, -10^9<=X<=!0^9，所有数字都是整数。
+
+思路： 暴力肯定是不行，会TLE，所以要在暴力的基础上做一些优化 遇到这种会TLE的情况，首先想到的可以选择的办法有桶，排序，特殊情况的剪枝，或者是符合题目要求的特殊的数据结构
+
+我的思路是先排序，然后每两个数之间的差存在一个数组里面，然后对这个数组取段，把这一段里面的数都加起来，判断是不是等于X；如果不等于，循环选择不同的段，经过两次优化，题目通过了，但不是一个好办法，复杂度还是O(n^2)，代码如下：
+
+int main() {
+    ll n,x,a[200005],c[200005];
+    cin>>n>>x;
+    x=abs(x);
+    for(int i=0;i<n;i++){
+        scanf("%lld",&a[i]);
+    }
+    sort(a,a+n);
+    if(a[n-1]-a[0]<x){
+        cout<<"No"<<endl;
+        return 0;
+    }
+    for(int i=0;i<n-1;i++){
+        c[i]=a[i+1]-a[i];
+    }
+    for(int i=0;i<n;i++){
+        ll all=0;
+        for(int j=i;j<n-1;j++){
+            all=all+c[j];
+            if(all>x){
+                break;
+            }
+            if(all==x){
+                cout<<"Yes"<<endl;
+                return 0;
+            }
+        }
+        if(all==x){
+            cout<<"Yes"<<endl;
+            return 0;
+        }
+    }
+    cout<<"No"<<endl;
+    return 0;
+}
+
+进一步优化，对数据段比对过程做优化的话，可以把比对过程提高到O(n)复杂度，代码如下：
+
+int main() {
+    ll n,x,a[200005];
+    cin>>n>>x;
+    x=abs(x);
+    for(int i=0;i<n;i++){
+        scanf("%lld",&a[i]);
+    }
+    sort(a,a+n);
+    ll j=0;
+    for(int i=0;i<n;i++){
+        while(j<n){
+            if(a[j]-a[i]>=x){
+                break;
+            }
+            j++;
+        }
+        if(a[j]-a[i]==x){
+            cout<<"Yes"<<endl;
+            return 0;
+        }
+    }
+    cout<<"No"<<endl;
+    return 0;
+}
+
+另外，我还新学习了集合这个数据结构，了解到它的查询时间复杂度是O(log n)，这样遍历整个set的话，时间复杂度是O(n*log n)。
